@@ -1,0 +1,10 @@
+# .NET
+**/bin/
+**/obj/
+
+# Node/Expo
+**/node_modules/
+**/.expo/
+**/.expo-shared/
+**/dist/
+**/build/
