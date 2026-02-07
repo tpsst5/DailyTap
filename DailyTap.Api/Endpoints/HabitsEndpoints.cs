@@ -36,7 +36,9 @@ public static class HabitsEndpoints
                 var habit = new Habit
                 {
                     Name = request.Name,
-                    Notes = request.Notes
+                    Emoji = request.Emoji,
+                    CreatedAt = request.CreatedAt ?? DateTime.UtcNow.ToString("yyyy-MM-dd"),
+                    CompletedDates = request.CompletedDates ?? new List<string>()
                 };
 
                 try
@@ -77,7 +79,9 @@ public static class HabitsEndpoints
                         new Habit
                         {
                             Name = request.Name,
-                            Notes = request.Notes
+                            Emoji = request.Emoji,
+                            CreatedAt = request.CreatedAt ?? DateTime.UtcNow.ToString("yyyy-MM-dd"),
+                            CompletedDates = request.CompletedDates ?? new List<string>()
                         },
                         cancellationToken);
 
@@ -129,5 +133,5 @@ public static class HabitsEndpoints
     }
 }
 
-public record HabitCreateRequest(string Name, string? Notes);
-public record HabitUpdateRequest(string Name, string? Notes);
+public record HabitCreateRequest(string Name, string? Emoji, string? CreatedAt, List<string>? CompletedDates);
+public record HabitUpdateRequest(string Name, string? Emoji, string? CreatedAt, List<string>? CompletedDates);

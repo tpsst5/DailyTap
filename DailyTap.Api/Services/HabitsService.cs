@@ -42,7 +42,10 @@ public class HabitsService
 
         habit.Id = ObjectId.GenerateNewId().ToString();
         habit.UserId = userId;
-        habit.CreatedAtUtc = DateTime.UtcNow;
+        habit.CreatedAt = string.IsNullOrWhiteSpace(habit.CreatedAt)
+            ? DateTime.UtcNow.ToString("yyyy-MM-dd")
+            : habit.CreatedAt;
+        habit.CompletedDates ??= new List<string>();
 
         await _habits.CreateAsync(habit, cancellationToken);
         return habit;
@@ -77,7 +80,11 @@ public class HabitsService
         }
 
         existing.Name = updated.Name;
-        existing.Notes = updated.Notes;
+        existing.Emoji = updated.Emoji;
+        existing.CompletedDates = updated.CompletedDates ?? new List<string>();
+        existing.CreatedAt = string.IsNullOrWhiteSpace(updated.CreatedAt)
+            ? existing.CreatedAt
+            : updated.CreatedAt;
         existing.UpdatedAtUtc = DateTime.UtcNow;
 
         var saved = await _habits.UpdateAsync(existing, cancellationToken);

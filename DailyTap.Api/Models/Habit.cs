@@ -15,11 +15,14 @@ public class Habit
     [BsonElement("name")]
     public string Name { get; set; } = string.Empty;
 
-    [BsonElement("notes")]
-    public string? Notes { get; set; }
+    [BsonElement("emoji")]
+    public string? Emoji { get; set; }
 
-    [BsonElement("createdAtUtc")]
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    [BsonElement("createdAt")]
+    public string CreatedAt { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd");
+
+    [BsonElement("completedDates")]
+    public List<string> CompletedDates { get; set; } = new();
 
     [BsonElement("updatedAtUtc")]
     public DateTime? UpdatedAtUtc { get; set; }
