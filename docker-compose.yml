@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  mongo:
+    image: mongo:7
+    container_name: dailytap-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - dailytap-mongo-data:/data/db
+  api:
+    build:
+      context: .
+      dockerfile: DailyTap.Api/Dockerfile
+    container_name: dailytap-api
+    depends_on:
+      - mongo
+    ports:
+      - "61599:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      MongoSettings__ConnectionString: mongodb://mongo:27017
+      MongoSettings__Database: dailytap
+      MongoSettings__UsersCollection: users
+      MongoSettings__HabitsCollection: habits
+      JwtOptions__Issuer: DailyTap.Api
+      JwtOptions__Audience: DailyTap.Mobile
+      JwtOptions__ExpiresMinutes: "60"
+    env_file:
+      - .env
+    profiles:
+      - api
+volumes:
+  dailytap-mongo-data:
