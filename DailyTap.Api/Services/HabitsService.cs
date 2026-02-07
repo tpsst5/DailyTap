@@ -15,11 +15,31 @@ public class HabitsService
 
     public Task<List<Habit>> GetForUserAsync(string userId, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id is required.", nameof(userId));
+        }
+
         return _habits.GetByUserIdAsync(userId, cancellationToken);
     }
 
     public async Task<Habit> CreateAsync(string userId, Habit habit, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id is required.", nameof(userId));
+        }
+
+        if (habit is null)
+        {
+            throw new ArgumentException("Habit is required.", nameof(habit));
+        }
+
+        if (string.IsNullOrWhiteSpace(habit.Name))
+        {
+            throw new ArgumentException("Habit name is required.", nameof(habit));
+        }
+
         habit.Id = ObjectId.GenerateNewId().ToString();
         habit.UserId = userId;
         habit.CreatedAtUtc = DateTime.UtcNow;
@@ -30,6 +50,26 @@ public class HabitsService
 
     public async Task<Habit?> UpdateAsync(string userId, string habitId, Habit updated, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id is required.", nameof(userId));
+        }
+
+        if (string.IsNullOrWhiteSpace(habitId))
+        {
+            throw new ArgumentException("Habit id is required.", nameof(habitId));
+        }
+
+        if (updated is null)
+        {
+            throw new ArgumentException("Habit is required.", nameof(updated));
+        }
+
+        if (string.IsNullOrWhiteSpace(updated.Name))
+        {
+            throw new ArgumentException("Habit name is required.", nameof(updated));
+        }
+
         var existing = await _habits.GetByIdAsync(habitId, cancellationToken);
         if (existing is null || existing.UserId != userId)
         {
@@ -46,6 +86,16 @@ public class HabitsService
 
     public async Task<bool> DeleteAsync(string userId, string habitId, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id is required.", nameof(userId));
+        }
+
+        if (string.IsNullOrWhiteSpace(habitId))
+        {
+            throw new ArgumentException("Habit id is required.", nameof(habitId));
+        }
+
         var existing = await _habits.GetByIdAsync(habitId, cancellationToken);
         if (existing is null || existing.UserId != userId)
         {

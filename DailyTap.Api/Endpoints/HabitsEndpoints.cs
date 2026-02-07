@@ -27,6 +27,11 @@ public static class HabitsEndpoints
                 HabitsService habitsService,
                 CancellationToken cancellationToken) =>
             {
+                if (string.IsNullOrWhiteSpace(request.Name))
+                {
+                    return Results.BadRequest(new ErrorResponse("Habit name is required."));
+                }
+
                 var userId = GetUserId(user);
                 var habit = new Habit
                 {
@@ -34,8 +39,15 @@ public static class HabitsEndpoints
                     Notes = request.Notes
                 };
 
-                var created = await habitsService.CreateAsync(userId, habit, cancellationToken);
-                return Results.Ok(created);
+                try
+                {
+                    var created = await habitsService.CreateAsync(userId, habit, cancellationToken);
+                    return Results.Ok(created);
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new ErrorResponse(ex.Message));
+                }
             })
             .WithName("CreateHabit");
 
@@ -46,18 +58,35 @@ public static class HabitsEndpoints
                 HabitsService habitsService,
                 CancellationToken cancellationToken) =>
             {
-                var userId = GetUserId(user);
-                var updated = await habitsService.UpdateAsync(
-                    userId,
-                    id,
-                    new Habit
-                    {
-                        Name = request.Name,
-                        Notes = request.Notes
-                    },
-                    cancellationToken);
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    return Results.BadRequest(new ErrorResponse("Habit id is required."));
+                }
 
-                return updated is null ? Results.NotFound() : Results.Ok(updated);
+                if (string.IsNullOrWhiteSpace(request.Name))
+                {
+                    return Results.BadRequest(new ErrorResponse("Habit name is required."));
+                }
+
+                var userId = GetUserId(user);
+                try
+                {
+                    var updated = await habitsService.UpdateAsync(
+                        userId,
+                        id,
+                        new Habit
+                        {
+                            Name = request.Name,
+                            Notes = request.Notes
+                        },
+                        cancellationToken);
+
+                    return updated is null ? Results.NotFound() : Results.Ok(updated);
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new ErrorResponse(ex.Message));
+                }
             })
             .WithName("UpdateHabit");
 
@@ -67,9 +96,21 @@ public static class HabitsEndpoints
                 HabitsService habitsService,
                 CancellationToken cancellationToken) =>
             {
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    return Results.BadRequest(new ErrorResponse("Habit id is required."));
+                }
+
                 var userId = GetUserId(user);
-                var deleted = await habitsService.DeleteAsync(userId, id, cancellationToken);
-                return deleted ? Results.NoContent() : Results.NotFound();
+                try
+                {
+                    var deleted = await habitsService.DeleteAsync(userId, id, cancellationToken);
+                    return deleted ? Results.NoContent() : Results.NotFound();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new ErrorResponse(ex.Message));
+                }
             })
             .WithName("DeleteHabit");
 

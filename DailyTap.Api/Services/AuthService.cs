@@ -23,6 +23,11 @@ public class AuthService
 
     public async Task<AuthResult> RegisterAsync(string email, string password, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            return AuthResult.Failed("Email and password are required.");
+        }
+
         var normalizedEmail = NormalizeEmail(email);
         var existing = await _users.GetByEmailAsync(normalizedEmail, cancellationToken);
         if (existing is not null)
@@ -45,6 +50,11 @@ public class AuthService
 
     public async Task<AuthResult> LoginAsync(string email, string password, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            return AuthResult.Failed("Email and password are required.");
+        }
+
         var normalizedEmail = NormalizeEmail(email);
         var user = await _users.GetByEmailAsync(normalizedEmail, cancellationToken);
         if (user is null || !_passwordHasher.Verify(password, user.PasswordHash))
