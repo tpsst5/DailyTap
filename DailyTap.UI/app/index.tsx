@@ -8,6 +8,7 @@ import { useRouter, type Href } from 'expo-router';
 import { getCurrentStreak, type Habit } from '../src/models/habit';
 import { addHabit, getHabits, toggleHabitToday } from '../src/services/habitsService';
 import { getDateKey } from '../src/utils/dates';
+import { clearStoredUser } from '../src/storage/userStorage';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -90,6 +91,15 @@ export default function HomeScreen() {
         <>
           <Text className="text-2xl font-semibold">DailyTap</Text>
           <Text className="mt-2 text-base text-neutral-700">Minimal habit tracker</Text>
+          <Pressable
+            className="mt-3 self-start"
+            onPress={async () => {
+              await clearStoredUser();
+              router.replace('/auth/login');
+            }}
+          >
+            <Text className="text-sm text-red-500">Clear session</Text>
+          </Pressable>
 
           {isLoading ? (
             <Text className="mt-4 text-sm text-neutral-500">Loading habits...</Text>

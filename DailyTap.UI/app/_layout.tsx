@@ -39,7 +39,7 @@ export default function RootLayout() {
           setHasUser(false);
         }
       } finally {
-        if (isMounted) {
+        if (isMounted && isLoading) {
           setIsLoading(false);
         }
       }
@@ -50,7 +50,7 @@ export default function RootLayout() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isLoading, segments]);
 
   useEffect(() => {
     if (isLoading || hasUser === null) {
