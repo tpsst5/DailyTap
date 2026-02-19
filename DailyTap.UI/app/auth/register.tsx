@@ -1,6 +1,16 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { Controller, useForm } from 'react-hook-form';
-import { Keyboard, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback
+} from 'react-native';
 import * as yup from 'yup';
 
 import { Link, router } from 'expo-router';
@@ -20,6 +30,7 @@ const validationSchema = yup.object({
 });
 
 export default function RegisterScreen() {
+  const headerHeight = useHeaderHeight();
   const {
     control,
     handleSubmit,
@@ -43,10 +54,19 @@ export default function RegisterScreen() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 justify-center p-6">
-        <Text className="text-2xl font-semibold">Create account</Text>
-        <Text className="mt-2 text-base text-neutral-700">Start tracking your habits.</Text>
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text className="text-2xl font-semibold">Create account</Text>
+          <Text className="mt-2 text-base text-neutral-700">Start tracking your habits.</Text>
 
         <Text className="mt-6 text-sm text-neutral-700">Name</Text>
         <Controller
@@ -121,7 +141,8 @@ export default function RegisterScreen() {
             Login
           </Link>
         </Text>
-      </View>
-    </TouchableWithoutFeedback>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }

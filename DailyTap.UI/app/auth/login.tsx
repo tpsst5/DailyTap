@@ -1,6 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Keyboard, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback
+} from 'react-native';
 import * as yup from 'yup';
 
 import { Link, router } from 'expo-router';
@@ -19,6 +30,7 @@ const validationSchema = yup.object({
 });
 
 export default function LoginScreen() {
+  const headerHeight = useHeaderHeight();
   const {
     control,
     handleSubmit,
@@ -41,10 +53,19 @@ export default function LoginScreen() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 justify-center p-6">
-        <Text className="text-2xl font-semibold">Login</Text>
-        <Text className="mt-2 text-base text-neutral-700">Welcome back!</Text>
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text className="text-2xl font-semibold">Login</Text>
+          <Text className="mt-2 text-base text-neutral-700">Welcome back!</Text>
 
         <Text className="mt-6 text-sm text-neutral-700">Email</Text>
         <Controller
@@ -105,7 +126,8 @@ export default function LoginScreen() {
             Register
           </Link>
         </Text>
-      </View>
-    </TouchableWithoutFeedback>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }

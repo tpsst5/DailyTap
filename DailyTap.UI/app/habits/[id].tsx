@@ -1,11 +1,23 @@
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { 
+  Alert, 
+  Platform, 
+  Pressable, 
+  Text, 
+  TextInput, 
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  ScrollView,
+  Keyboard
+} from 'react-native';
 
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { deleteHabitById, getHabits, updateHabitById } from '../../src/services/habitsService';
 
 export default function EditHabitScreen() {
+  const headerHeight = useHeaderHeight();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('');
@@ -89,44 +101,56 @@ export default function EditHabitScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center p-6">
-      <Text className="text-2xl font-semibold">Edit Habit</Text>
-      <Text className="mt-2 text-base text-neutral-700">Update your habit details.</Text>
+    <KeyboardAvoidingView 
+      className="flex-1 justify-center p-6"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text className="text-2xl font-semibold">Edit Habit</Text>
+          <Text className="mt-2 text-base text-neutral-700">Update your habit details.</Text>
 
-      {isLoading ? (
-        <Text className="mt-4 text-sm text-neutral-500">Loading...</Text>
-      ) : !habitFound ? (
-        <Text className="mt-4 text-sm text-red-700">Habit not found.</Text>
-      ) : errorMessage ? (
-        <Text className="mt-4 text-sm text-red-700">{errorMessage}</Text>
-      ) : null}
+          {isLoading ? (
+            <Text className="mt-4 text-sm text-neutral-500">Loading...</Text>
+          ) : !habitFound ? (
+            <Text className="mt-4 text-sm text-red-700">Habit not found.</Text>
+          ) : errorMessage ? (
+            <Text className="mt-4 text-sm text-red-700">{errorMessage}</Text>
+          ) : null}
 
-      <Text className="mt-6 text-sm text-neutral-700">Habit name</Text>
-      <TextInput
-        className="mt-2 rounded-lg border border-neutral-300 px-3 py-2.5 text-base text-neutral-900"
-        placeholder="e.g. Drink water"
-        placeholderTextColor="#777"
-        value={name}
-        onChangeText={setName}
-      />
+          <Text className="mt-6 text-sm text-neutral-700">Habit name</Text>
+          <TextInput
+            className="mt-2 rounded-lg border border-neutral-300 px-3 py-2.5 text-base text-neutral-900"
+            placeholder="e.g. Drink water"
+            placeholderTextColor="#777"
+            value={name}
+            onChangeText={setName}
+          />
 
-      <Text className="mt-4 text-sm text-neutral-700">Emoji (optional)</Text>
-      <TextInput
-        className="mt-2 rounded-lg border border-neutral-300 px-3 py-2.5 text-base text-neutral-900"
-        placeholder="e.g. 💧"
-        placeholderTextColor="#777"
-        value={emoji}
-        onChangeText={setEmoji}
-        maxLength={2}
-      />
+          <Text className="mt-4 text-sm text-neutral-700">Emoji (optional)</Text>
+          <TextInput
+            className="mt-2 rounded-lg border border-neutral-300 px-3 py-2.5 text-base text-neutral-900"
+            placeholder="e.g. 💧"
+            placeholderTextColor="#777"
+            value={emoji}
+            onChangeText={setEmoji}
+            maxLength={2}
+          />
 
-      <Pressable className="mt-6 rounded-lg bg-neutral-900 px-4 py-2.5" onPress={handleSave}>
-        <Text className="text-sm font-semibold text-white">Save habit</Text>
-      </Pressable>
+          <Pressable className="mt-6 rounded-lg bg-neutral-900 px-4 py-2.5" onPress={handleSave}>
+            <Text className="text-sm font-semibold text-white">Save habit</Text>
+          </Pressable>
 
-      <Pressable className="mt-3 rounded-lg border border-red-300 px-4 py-2.5" onPress={handleDelete}>
-        <Text className="text-sm font-semibold text-red-700">Delete habit</Text>
-      </Pressable>
-    </View>
+          <Pressable className="mt-3 rounded-lg border border-red-300 px-4 py-2.5" onPress={handleDelete}>
+            <Text className="text-sm font-semibold text-red-700">Delete habit</Text>
+          </Pressable>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
