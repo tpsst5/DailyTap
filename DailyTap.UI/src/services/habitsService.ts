@@ -1,51 +1,63 @@
 import { createHabit, toggleCompletionForDate, type Habit } from '../models/habit';
-import { loadHabits, saveHabits } from '../storage/habitsStorage';
+import {
+  createHabitRemote,
+  deleteHabitRemote,
+  fetchHabits,
+  updateHabitRemote,
+} from '../api/habitsApi';
 import { getDateKey } from '../utils/dates';
 
 export async function getHabits(): Promise<Habit[]> {
-  return loadHabits();
+  return fetchHabits();
 }
 
 export async function addHabit(name: string, emoji?: string): Promise<Habit[]> {
-  const habits = await loadHabits();
-  const updatedHabits = [...habits, createHabit(name, emoji)];
-  await saveHabits(updatedHabits);
-  return updatedHabits;
+  const newHabit = createHabit(name, emoji);
+  await createHabitRemote(newHabit);
+  const habits = await fetchHabits();
+  return sortHabitsByCompletion(habits, new Date());
 }
 
 export async function toggleHabitToday(habitId: string, today = new Date()): Promise<Habit[]> {
-  const habits = await loadHabits();
-  const updatedHabits = habits.map((habit) =>
-    habit.id === habitId ? toggleCompletionForDate(habit, today) : habit,
-  );
+  const habits = await fetchHabits();
+  const target = habits.find((habit) => habit.id === habitId);
+  if (!target) {
+    return sortHabitsByCompletion(habits, today);
+  }
 
-  const todayKey = getDateKey(today);
-  const sortedHabits = updatedHabits.slice().sort((a, b) => {
-    const aCompleted = a.completedDates.includes(todayKey);
-    const bCompleted = b.completedDates.includes(todayKey);
-    if (aCompleted === bCompleted) return 0;
-    return aCompleted ? 1 : -1;
-  });
-
-  await saveHabits(sortedHabits);
-  return sortedHabits;
+  const updated = toggleCompletionForDate(target, today);
+  await updateHabitRemote(habitId, updated);
+  const refreshed = await fetchHabits();
+  return sortHabitsByCompletion(refreshed, today);
 }
 
 export async function deleteHabitById(habitId: string): Promise<Habit[]> {
-  const habits = await loadHabits();
-  const updatedHabits = habits.filter((habit) => habit.id !== habitId);
-  await saveHabits(updatedHabits);
-  return updatedHabits;
+  await deleteHabitRemote(habitId);
+  const habits = await fetchHabits();
+  return sortHabitsByCompletion(habits, new Date());
 }
 
 export async function updateHabitById(
   habitId: string,
   updates: Pick<Habit, 'name' | 'emoji'>,
 ): Promise<Habit[]> {
-  const habits = await loadHabits();
-  const updatedHabits = habits.map((habit) =>
-    habit.id === habitId ? { ...habit, ...updates } : habit,
-  );
-  await saveHabits(updatedHabits);
-  return updatedHabits;
+  const habits = await fetchHabits();
+  const target = habits.find((habit) => habit.id === habitId);
+  if (!target) {
+    return sortHabitsByCompletion(habits, new Date());
+  }
+
+  await updateHabitRemote(habitId, { ...target, ...updates });
+  const refreshed = await fetchHabits();
+  return sortHabitsByCompletion(refreshed, new Date());
+}
+
+function sortHabitsByCompletion(habits: Habit[], today: Date): Habit[] {
+  const todayKey = getDateKey(today);
+  return habits.slice().sort((a, b) => {
+    const aCompleted = a.completedDates.includes(todayKey);
+    const bCompleted = b.completedDates.includes(todayKey);
+    if (aCompleted === bCompleted) return 0;
+    return aCompleted ? 1 : -1;
+  });
 }
