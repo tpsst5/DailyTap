@@ -35,11 +35,11 @@ export default function HomeScreen() {
       setHabits(sortHabitsByCompletion(storedHabits));
       setErrorMessage(null);
     } catch (error) {
-      console.error(error);
       const message = error instanceof Error ? error.message : '';
       if (message.includes('(401)')) {
         router.replace('/auth/login');
       } else {
+        console.error(error);
         setErrorMessage('Could not load habits.');
       }
     } finally {
