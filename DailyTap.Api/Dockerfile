@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY . .
-RUN dotnet restore "DailyTap.Api/DailyTap.Api.csproj"
-RUN dotnet publish "DailyTap.Api/DailyTap.Api.csproj" -c Release -o /app/publish
+RUN dotnet restore "DailyTap.Api.csproj"
+RUN dotnet publish "DailyTap.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app

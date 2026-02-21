@@ -1,0 +1,46 @@
+name: dailytap-api
+region: sfo
+services:
+  - name: api
+    github:
+      repo: tpsst5/DailyTap
+      branch: main
+      deploy_on_push: true
+    source_dir: DailyTap.Api
+    dockerfile_path: Dockerfile
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    envs:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+        scope: RUN_TIME
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:8080
+        scope: RUN_TIME
+      - key: MongoSettings__ConnectionString
+        value: CHANGE_ME_IN_DIGITALOCEAN
+        scope: RUN_TIME
+      - key: MongoSettings__Database
+        value: dailytap
+        scope: RUN_TIME
+      - key: MongoSettings__UsersCollection
+        value: users
+        scope: RUN_TIME
+      - key: MongoSettings__HabitsCollection
+        value: habits
+        scope: RUN_TIME
+      - key: JwtOptions__Issuer
+        value: DailyTap.Api
+        scope: RUN_TIME
+      - key: JwtOptions__Audience
+        value: DailyTap.Mobile
+        scope: RUN_TIME
+      - key: JwtOptions__ExpiresMinutes
+        value: "60"
+        scope: RUN_TIME
+      - key: JwtOptions__SigningKey
+        value: CHANGE_ME_IN_DIGITALOCEAN
+        scope: RUN_TIME

@@ -1,4 +1,4 @@
-import { getStoredToken } from '../storage/userStorage';
+import { clearStoredUser, getStoredToken } from '../storage/userStorage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
 
@@ -21,6 +21,10 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      // Keep auth gate in sync when token is invalid/expired.
+      await clearStoredUser();
+    }
     const message = await response.text();
     throw new Error(`Request failed (${response.status}): ${message || response.statusText}`);
   }
