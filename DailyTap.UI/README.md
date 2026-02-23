@@ -1,50 +1,73 @@
-# Welcome to your Expo app 👋
+# DailyTap UI
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo (React Native + Expo Router) client for DailyTap.
 
-## Get started
+## Tech Stack
 
-1. Install dependencies
+- Expo SDK 54
+- React Native 0.81
+- TypeScript
+- Expo Router
+- NativeWind/Tailwind CSS
 
-   ```bash
-   npm install
-   ```
+## Prerequisites
 
-2. Start the app
+- Node.js 20+
+- npm
+- Running DailyTap API instance
 
-   ```bash
-   npx expo start
-   ```
+## Environment Variables
 
-In the output, you'll find options to open the app in a
+Create `.env` in `DailyTap.UI` with:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```env
+EXPO_PUBLIC_API_URL=http://localhost:61599
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+If testing on a physical device, use your machine IP instead of `localhost`, for example:
 
-## Learn more
+`EXPO_PUBLIC_API_URL=http://192.168.1.10:61599`
 
-To learn more about developing your project with Expo, look at the following resources:
+## Run Locally
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+From `DailyTap.UI`:
 
-## Join the community
+```bash
+npm install
+npm run start
+```
 
-Join our community of developers creating universal apps.
+Other scripts:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npm run android
+npm run ios
+npm run web
+npm run lint
+```
+
+## API Integration
+
+The app reads `EXPO_PUBLIC_API_URL` in `src/api/client.ts` and uses it for all API requests.
+
+Ensure the API is running before login/register flows.
+
+## Docker (Local Dev Only)
+
+From repo root:
+
+```bash
+docker compose --profile ui up --build
+```
+
+This runs the Expo dev server and exposes ports:
+
+- `19000`
+- `19001`
+- `19002`
+- `19006`
+
+## Related Docs
+
+- Monorepo overview: [`../README.md`](../README.md)
+- API setup: [`../DailyTap.Api/README.md`](../DailyTap.Api/README.md)
